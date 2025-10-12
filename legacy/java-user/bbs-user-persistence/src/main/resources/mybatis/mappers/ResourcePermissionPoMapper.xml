@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.bbs.user.persistence.mapper.ResourcePermissionPoMapper">
+  <resultMap id="BaseResultMap" type="com.liang.bbs.user.persistence.entity.ResourcePermissionPo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="resource_type" jdbcType="VARCHAR" property="resourceType" />
+    <result column="resource_id" jdbcType="BIGINT" property="resourceId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="role_type" jdbcType="VARCHAR" property="roleType" />
+    <result column="permissions" jdbcType="VARCHAR" property="permissions" />
+    <result column="granted_by" jdbcType="INTEGER" property="grantedBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, resource_type, resource_id, user_id, role_type, permissions, granted_by, create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.liang.bbs.user.persistence.entity.ResourcePermissionPoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from resource_permission
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from resource_permission
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from resource_permission
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.liang.bbs.user.persistence.entity.ResourcePermissionPoExample">
+    delete from resource_permission
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.liang.bbs.user.persistence.entity.ResourcePermissionPo" useGeneratedKeys="true">
+    insert into resource_permission (resource_type, resource_id, user_id,
+      role_type, permissions, granted_by, create_time, update_time)
+    values (#{resourceType,jdbcType=VARCHAR}, #{resourceId,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER},
+      #{roleType,jdbcType=VARCHAR}, #{permissions,jdbcType=VARCHAR}, #{grantedBy,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.liang.bbs.user.persistence.entity.ResourcePermissionPo" useGeneratedKeys="true">
+    insert into resource_permission
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="resourceType != null">
+        resource_type,
+      </if>
+      <if test="resourceId != null">
+        resource_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="roleType != null">
+        role_type,
+      </if>
+      <if test="permissions != null">
+        permissions,
+      </if>
+      <if test="grantedBy != null">
+        granted_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="resourceType != null">
+        #{resourceType,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceId != null">
+        #{resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="roleType != null">
+        #{roleType,jdbcType=VARCHAR},
+      </if>
+      <if test="permissions != null">
+        #{permissions,jdbcType=VARCHAR},
+      </if>
+      <if test="grantedBy != null">
+        #{grantedBy,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.liang.bbs.user.persistence.entity.ResourcePermissionPoExample" resultType="java.lang.Long">
+    select count(*) from resource_permission
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update resource_permission
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.resourceType != null">
+        resource_type = #{record.resourceType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.resourceId != null">
+        resource_id = #{record.resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.roleType != null">
+        role_type = #{record.roleType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.permissions != null">
+        permissions = #{record.permissions,jdbcType=VARCHAR},
+      </if>
+      <if test="record.grantedBy != null">
+        granted_by = #{record.grantedBy,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update resource_permission
+    set id = #{record.id,jdbcType=BIGINT},
+      resource_type = #{record.resourceType,jdbcType=VARCHAR},
+      resource_id = #{record.resourceId,jdbcType=BIGINT},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      role_type = #{record.roleType,jdbcType=VARCHAR},
+      permissions = #{record.permissions,jdbcType=VARCHAR},
+      granted_by = #{record.grantedBy,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.liang.bbs.user.persistence.entity.ResourcePermissionPo">
+    update resource_permission
+    <set>
+      <if test="resourceType != null">
+        resource_type = #{resourceType,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceId != null">
+        resource_id = #{resourceId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="roleType != null">
+        role_type = #{roleType,jdbcType=VARCHAR},
+      </if>
+      <if test="permissions != null">
+        permissions = #{permissions,jdbcType=VARCHAR},
+      </if>
+      <if test="grantedBy != null">
+        granted_by = #{grantedBy,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.liang.bbs.user.persistence.entity.ResourcePermissionPo">
+    update resource_permission
+    set resource_type = #{resourceType,jdbcType=VARCHAR},
+      resource_id = #{resourceId,jdbcType=BIGINT},
+      user_id = #{userId,jdbcType=INTEGER},
+      role_type = #{roleType,jdbcType=VARCHAR},
+      permissions = #{permissions,jdbcType=VARCHAR},
+      granted_by = #{grantedBy,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

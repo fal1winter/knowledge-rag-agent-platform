@@ -1,0 +1,20 @@
+{"query": "Milvus 和 Elasticsearch 在我们的混合检索里分别负责什么", "label_json": "{\"intent\": \"material_search\", \"confidence\": 0.94, \"reasoning\": \"asks about knowledge-base retrieval components\"}"}
+{"query": "RAPTOR 的父节点摘要是怎么生成的", "label_json": "{\"intent\": \"material_search\", \"confidence\": 0.93, \"reasoning\": \"document/knowledge structure question\"}"}
+{"query": "比较 RAPTOR 树状检索和普通平铺切片的召回差异并说明原因", "label_json": "{\"intent\": \"complex_reasoning\", \"confidence\": 0.95, \"reasoning\": \"requires multi-aspect comparison and causal reasoning\"}"}
+{"query": "综合三份季度报告归纳出营收下滑的主要原因", "label_json": "{\"intent\": \"complex_reasoning\", \"confidence\": 0.95, \"reasoning\": \"cross-document synthesis and attribution\"}"}
+{"query": "实体A和实体B之间有没有上下游依赖关系", "label_json": "{\"intent\": \"entity_relation\", \"confidence\": 0.96, \"reasoning\": \"explicit relationship/path query over entities\"}"}
+{"query": "从张三能通过几跳关联到这家供应商", "label_json": "{\"intent\": \"entity_relation\", \"confidence\": 0.94, \"reasoning\": \"multi-hop graph path query\"}"}
+{"query": "公司的报销额度上限是多少", "label_json": "{\"intent\": \"direct_qa\", \"confidence\": 0.9, \"reasoning\": \"single-fact lookup\"}"}
+{"query": "请假流程的第一步是什么", "label_json": "{\"intent\": \"direct_qa\", \"confidence\": 0.9, \"reasoning\": \"direct factual procedure question\"}"}
+{"query": "解释一下什么是知识蒸馏", "label_json": "{\"intent\": \"direct_qa\", \"confidence\": 0.88, \"reasoning\": \"definition request answerable from one block\"}"}
+{"query": "这份PPT第三章讲了哪些要点", "label_json": "{\"intent\": \"material_search\", \"confidence\": 0.92, \"reasoning\": \"section-level material retrieval\"}"}
+{"query": "把这两个版本的设计方案放在一起评估优劣", "label_json": "{\"intent\": \"complex_reasoning\", \"confidence\": 0.93, \"reasoning\": \"comparative multi-source reasoning\"}"}
+{"query": "产品经理和这个需求文档之间是谁创建谁的关系", "label_json": "{\"intent\": \"entity_relation\", \"confidence\": 0.93, \"reasoning\": \"relationship direction query\"}"}
+{"query": "BGE-reranker 在精排阶段起什么作用", "label_json": "{\"intent\": \"material_search\", \"confidence\": 0.9, \"reasoning\": \"component knowledge question\"}"}
+{"query": "知识库里关于退货政策的原文是怎么写的", "label_json": "{\"intent\": \"direct_qa\", \"confidence\": 0.91, \"reasoning\": \"verbatim fact lookup\"}"}
+{"query": "梳理一下从数据接入到生成回答整条链路的瓶颈在哪", "label_json": "{\"intent\": \"complex_reasoning\", \"confidence\": 0.94, \"reasoning\": \"end-to-end analysis requiring decomposition\"}"}
+{"query": "这个模块依赖哪些上游服务", "label_json": "{\"intent\": \"entity_relation\", \"confidence\": 0.92, \"reasoning\": \"dependency relation query\"}"}
+{"query": "RRF 融合的 k 值默认是多少", "label_json": "{\"intent\": \"direct_qa\", \"confidence\": 0.9, \"reasoning\": \"single parameter lookup\"}"}
+{"query": "总结这份合同的关键条款", "label_json": "{\"intent\": \"material_search\", \"confidence\": 0.9, \"reasoning\": \"document summarization retrieval\"}"}
+{"query": "为什么近期检索召回率下降，结合日志和配置分析", "label_json": "{\"intent\": \"complex_reasoning\", \"confidence\": 0.95, \"reasoning\": \"diagnostic multi-evidence reasoning\"}"}
+{"query": "员工小李归属于哪个部门和哪个项目组", "label_json": "{\"intent\": \"entity_relation\", \"confidence\": 0.93, \"reasoning\": \"membership relationship query\"}"}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.bbs.user.persistence.mapper.UserCreditLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.liang.bbs.user.persistence.entity.UserCreditLogPo">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="amount" jdbcType="INTEGER" property="amount" />
+        <result column="balance" jdbcType="INTEGER" property="balance" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="related_id" jdbcType="BIGINT" property="relatedId" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="operator_id" jdbcType="INTEGER" property="operatorId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, amount, balance, type, related_id, remark, operator_id, create_time
+    </sql>
+
+    <insert id="insert" parameterType="com.liang.bbs.user.persistence.entity.UserCreditLogPo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_credit_log (user_id, amount, balance, type, related_id, remark, operator_id, create_time)
+        VALUES (#{userId}, #{amount}, #{balance}, #{type}, #{relatedId}, #{remark}, #{operatorId}, #{createTime})
+    </insert>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM user_credit_log
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countByUserId" resultType="long">
+        SELECT COUNT(*)
+        FROM user_credit_log
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM user_credit_log
+        WHERE id = #{id}
+    </select>
+
+</mapper>

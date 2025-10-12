@@ -1,0 +1,37 @@
+server:
+  port: ${GATEWAY_PORT:8088}
+
+auth:
+  jwt:
+    secret: ${JWT_SECRET:your-256-bit-secret-change-in-production}
+  gateway-internal-secret: ${GATEWAY_INTERNAL_SECRET:}
+
+rag:
+  python-api-base-url: ${RAG_API_BASE_URL:http://127.0.0.1:8080}
+
+payment:
+  credit-rate: ${PAYMENT_CREDIT_RATE:100}
+  alipay:
+    enabled: ${ALIPAY_ENABLED:false}
+    gateway-url: ${ALIPAY_GATEWAY_URL:https://openapi.alipay.com/gateway.do}
+    app-id: ${ALIPAY_APP_ID:}
+    merchant-private-key: ${ALIPAY_MERCHANT_PRIVATE_KEY:}
+    alipay-public-key: ${ALIPAY_PUBLIC_KEY:}
+    notify-url: ${ALIPAY_NOTIFY_URL:http://127.0.0.1:8088/api/payments/alipay/notify}
+    return-url: ${ALIPAY_RETURN_URL:http://127.0.0.1:8088/payments/alipay/return}
+  wechat:
+    enabled: ${WECHAT_PAY_ENABLED:false}
+    app-id: ${WECHAT_PAY_APP_ID:}
+    mch-id: ${WECHAT_PAY_MCH_ID:}
+    mch-serial-no: ${WECHAT_PAY_MCH_SERIAL_NO:}
+    api-v3-key: ${WECHAT_PAY_API_V3_KEY:}
+    private-key-path: ${WECHAT_PAY_PRIVATE_KEY_PATH:}
+    notify-url: ${WECHAT_PAY_NOTIFY_URL:http://127.0.0.1:8088/api/payments/wechat/notify}
+
+user-service:
+  mode: ${USER_SERVICE_MODE:dubbo}
+  credit-endpoint: ${USER_CREDIT_ENDPOINT:http://127.0.0.1:7013}
+
+material-service:
+  base-url: ${MATERIAL_SERVICE_BASE_URL:http://127.0.0.1:7010}
+  order-endpoint: ${MATERIAL_ORDER_ENDPOINT:http://127.0.0.1:7010/api}

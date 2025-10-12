@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS payment_order (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  order_no VARCHAR(64) NOT NULL UNIQUE,
+  user_id BIGINT NOT NULL,
+  tenant_id VARCHAR(64) NOT NULL,
+  subject VARCHAR(128) NOT NULL,
+  amount_fen BIGINT NOT NULL,
+  channel VARCHAR(32) NOT NULL,
+  status VARCHAR(32) NOT NULL,
+  related_biz_type VARCHAR(64),
+  related_biz_id VARCHAR(128),
+  provider_trade_no VARCHAR(128),
+  provider_payload TEXT,
+  created_at DATETIME NOT NULL,
+  paid_at DATETIME,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_payment_order_user (user_id),
+  KEY idx_payment_order_related (related_biz_type, related_biz_id),
+  KEY idx_payment_order_status (status)
+);

@@ -1,0 +1,20 @@
+{"context": ["我们在讨论 RAPTOR 树状检索"], "query": "它的父节点是怎么来的", "target_json": "{\"rewritten_query\": \"RAPTOR 树状检索的父节点摘要是如何生成的\"}"}
+{"context": ["上文在比较 Milvus 与 Elasticsearch"], "query": "前者负责哪部分", "target_json": "{\"rewritten_query\": \"Milvus 在混合检索中负责哪部分（稠密向量检索）\"}"}
+{"context": [], "query": "rag 是啥", "target_json": "{\"rewritten_query\": \"什么是检索增强生成（RAG）\"}"}
+{"context": ["刚才提到 BGE-reranker"], "query": "这个东西怎么配置", "target_json": "{\"rewritten_query\": \"BGE-reranker 精排模型如何配置\"}"}
+{"context": ["在说知识库的多跳检索"], "query": "这个走的什么存储", "target_json": "{\"rewritten_query\": \"知识图谱多跳检索走的是什么存储（Neo4j）\"}"}
+{"context": ["讨论报销政策"], "query": "那上限呢", "target_json": "{\"rewritten_query\": \"公司报销政策的额度上限是多少\"}"}
+{"context": ["上文是关于 RRF 融合算法"], "query": "它默认参数多少", "target_json": "{\"rewritten_query\": \"RRF 融合算法的默认 k 参数是多少\"}"}
+{"context": ["在聊三层记忆机制"], "query": "前面那层会被清掉吗", "target_json": "{\"rewritten_query\": \"三层记忆机制中的短期记忆层在清理会话时是否会被清除\"}"}
+{"context": [], "query": "材料里怎么说的", "target_json": "{\"rewritten_query\": \"知识库资料中对该主题是如何描述的\"}"}
+{"context": ["正在分析召回率下降"], "query": "可能是啥原因", "target_json": "{\"rewritten_query\": \"导致检索召回率下降的可能原因有哪些\"}"}
+{"context": ["上文提到 QLoRA 微调"], "query": "它省了哪部分成本", "target_json": "{\"rewritten_query\": \"QLoRA 微调的轻量模型节省了哪部分推理成本\"}"}
+{"context": ["在讨论意图路由网关"], "query": "第三级是干啥的", "target_json": "{\"rewritten_query\": \"三级意图路由网关的第三级（轻量小模型）负责什么\"}"}
+{"context": ["上文是文档解析"], "query": "图片和音视频也能处理？", "target_json": "{\"rewritten_query\": \"文档解析是否支持图片 OCR 与音视频 ASR 多格式处理\"}"}
+{"context": ["在说 LLM-as-Judge 评测"], "query": "它打哪几个分", "target_json": "{\"rewritten_query\": \"LLM-as-Judge 从哪些维度（相关性、忠实度、完整性、引文质量）打分\"}"}
+{"context": ["讨论 Pairwise A/B 灰度"], "query": "怎么判定谁赢", "target_json": "{\"rewritten_query\": \"Pairwise A/B 测试如何根据加权总分判定胜出方案\"}"}
+{"context": ["上文提到知识时效巡检"], "query": "多久跑一次", "target_json": "{\"rewritten_query\": \"静态公开知识的时效巡检按什么周期运行\"}"}
+{"context": [], "query": "这平台支持哪些文件", "target_json": "{\"rewritten_query\": \"该知识库平台支持哪些文档格式的解析\"}"}
+{"context": ["在比较两个检索策略"], "query": "哪个更适合长文档", "target_json": "{\"rewritten_query\": \"RAPTOR 与平铺切片检索中哪个更适合长文档跨章节召回\"}"}
+{"context": ["上文讲实体抽取"], "query": "抽出来存哪", "target_json": "{\"rewritten_query\": \"文档实体关系抽取后写入哪个存储（Neo4j 知识图谱）\"}"}
+{"context": ["讨论嵌入调用降本"], "query": "命中缓存还嵌入吗", "target_json": "{\"rewritten_query\": \"语义缓存命中时是否还会触发新的 embedding 调用\"}"}

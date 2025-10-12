@@ -1,0 +1,6 @@
+{"document_id": "kb-raptor", "tenant_id": "tenant-a", "title": "RAPTOR 层级检索", "text": "RAPTOR 通过自底向上的语义聚类构建树状层级索引。叶子节点保存原始文本切片，上层父节点保存聚类主题摘要。检索时先在摘要层做粗召回，再向下钻取到叶子节点，从而解决长文档跨章节语义割裂问题。"}
+{"document_id": "kb-hybrid", "tenant_id": "tenant-a", "title": "混合检索", "text": "混合检索融合 Milvus 稠密向量召回与 Elasticsearch BM25 稀疏召回，使用 RRF 倒数排名融合两路结果，再用 BGE-Reranker 交叉编码器精排，兼顾语义覆盖与关键词精确匹配。"}
+{"document_id": "kb-router", "tenant_id": "tenant-a", "title": "三级意图路由", "text": "意图路由网关分三级：规则指令直达、关键词正则精准匹配、轻量 Qwen 小模型兜底分类。简单问答走精准块检索，实体关系走 Neo4j 多跳，复杂推理走 agentic 迭代检索。"}
+{"document_id": "kb-memory", "tenant_id": "tenant-a", "title": "分层记忆", "text": "用户记忆分短期、会话摘要、长期三层，按层设置不同遗忘因子做指数衰减，高价值会话记忆晋升为长期记忆，避免上下文窗口溢出。"}
+{"document_id": "kb-eval", "tenant_id": "tenant-a", "title": "RAG 评测闭环", "text": "评测先用规则过滤空召回与缺引文，再用 LLM-as-Judge 从相关性、忠实度、完整性、引文质量打分，配合 Pairwise A/B 灰度对比，对不合格用例做错误归因。"}
+{"document_id": "kb-cost", "tenant_id": "tenant-a", "title": "降本策略", "text": "通过语义缓存命中跳过重复 Embedding 计算，高置信短指令跳过检索，意图与改写任务走 QLoRA 微调的小模型，降低大模型调用频次实现降本。"}

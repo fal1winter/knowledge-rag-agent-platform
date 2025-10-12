@@ -1,0 +1,2 @@
+"""Retrieval adapters and orchestration."""
+

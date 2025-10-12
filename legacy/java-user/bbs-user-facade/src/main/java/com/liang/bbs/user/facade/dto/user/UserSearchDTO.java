@@ -1,0 +1,24 @@
+package com.liang.bbs.user.facade.dto.user;
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ */
+@Data
+public class UserSearchDTO implements Serializable {
+
+    /**
+     * 当前页
+     */
+    private Integer currentPage;
+
+    /**
+     * 每页条数
+     */
+    private Integer pageSize;
+
+    private static final long serialVersionUID = 1L;
+
+}

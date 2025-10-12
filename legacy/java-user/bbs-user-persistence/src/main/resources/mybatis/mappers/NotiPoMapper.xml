@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.bbs.user.persistence.mapper.NotiPoMapper">
+  <resultMap id="BaseResultMap" type="com.liang.bbs.user.persistence.entity.NotiPo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="time" jdbcType="TIMESTAMP" property="time" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="expiretime" jdbcType="TIMESTAMP" property="expiretime" />
+    <result column="senderid" jdbcType="INTEGER" property="senderid" />
+    <result column="is_read" jdbcType="VARCHAR" property="isRead" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.liang.bbs.user.persistence.entity.NotiPo">
+    <result column="extra" jdbcType="LONGVARCHAR" property="extra" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, userid, `type`, content, `time`, `status`, expiretime, senderid, is_read
+  </sql>
+  <sql id="Blob_Column_List">
+    extra
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.liang.bbs.user.persistence.entity.NotiPoExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from pp_noti
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.liang.bbs.user.persistence.entity.NotiPoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from pp_noti
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from pp_noti
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from pp_noti
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.liang.bbs.user.persistence.entity.NotiPoExample">
+    delete from pp_noti
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.liang.bbs.user.persistence.entity.NotiPo" useGeneratedKeys="true">
+    insert into pp_noti (userid, `type`, content, 
+      `time`, `status`, expiretime, 
+      senderid, is_read, extra
+      )
+    values (#{userid,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{time,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, #{expiretime,jdbcType=TIMESTAMP}, 
+      #{senderid,jdbcType=INTEGER}, #{isRead,jdbcType=VARCHAR}, #{extra,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.liang.bbs.user.persistence.entity.NotiPo" useGeneratedKeys="true">
+    insert into pp_noti
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="time != null">
+        `time`,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="expiretime != null">
+        expiretime,
+      </if>
+      <if test="senderid != null">
+        senderid,
+      </if>
+      <if test="isRead != null">
+        is_read,
+      </if>
+      <if test="extra != null">
+        extra,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="expiretime != null">
+        #{expiretime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="senderid != null">
+        #{senderid,jdbcType=INTEGER},
+      </if>
+      <if test="isRead != null">
+        #{isRead,jdbcType=VARCHAR},
+      </if>
+      <if test="extra != null">
+        #{extra,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.liang.bbs.user.persistence.entity.NotiPoExample" resultType="java.lang.Long">
+    select count(*) from pp_noti
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update pp_noti
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.userid != null">
+        userid = #{record.userid,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        `type` = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.time != null">
+        `time` = #{record.time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expiretime != null">
+        expiretime = #{record.expiretime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.senderid != null">
+        senderid = #{record.senderid,jdbcType=INTEGER},
+      </if>
+      <if test="record.isRead != null">
+        is_read = #{record.isRead,jdbcType=VARCHAR},
+      </if>
+      <if test="record.extra != null">
+        extra = #{record.extra,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update pp_noti
+    set id = #{record.id,jdbcType=INTEGER},
+      userid = #{record.userid,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=VARCHAR},
+      `time` = #{record.time,jdbcType=TIMESTAMP},
+      `status` = #{record.status,jdbcType=VARCHAR},
+      expiretime = #{record.expiretime,jdbcType=TIMESTAMP},
+      senderid = #{record.senderid,jdbcType=INTEGER},
+      is_read = #{record.isRead,jdbcType=VARCHAR},
+      extra = #{record.extra,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update pp_noti
+    set id = #{record.id,jdbcType=INTEGER},
+      userid = #{record.userid,jdbcType=INTEGER},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=VARCHAR},
+      `time` = #{record.time,jdbcType=TIMESTAMP},
+      `status` = #{record.status,jdbcType=VARCHAR},
+      expiretime = #{record.expiretime,jdbcType=TIMESTAMP},
+      senderid = #{record.senderid,jdbcType=INTEGER},
+      is_read = #{record.isRead,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.liang.bbs.user.persistence.entity.NotiPo">
+    update pp_noti
+    <set>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        `time` = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="expiretime != null">
+        expiretime = #{expiretime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="senderid != null">
+        senderid = #{senderid,jdbcType=INTEGER},
+      </if>
+      <if test="isRead != null">
+        is_read = #{isRead,jdbcType=VARCHAR},
+      </if>
+      <if test="extra != null">
+        extra = #{extra,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.liang.bbs.user.persistence.entity.NotiPo">
+    update pp_noti
+    set userid = #{userid,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      `time` = #{time,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=VARCHAR},
+      expiretime = #{expiretime,jdbcType=TIMESTAMP},
+      senderid = #{senderid,jdbcType=INTEGER},
+      is_read = #{isRead,jdbcType=VARCHAR},
+      extra = #{extra,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.liang.bbs.user.persistence.entity.NotiPo">
+    update pp_noti
+    set userid = #{userid,jdbcType=INTEGER},
+      `type` = #{type,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      `time` = #{time,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=VARCHAR},
+      expiretime = #{expiretime,jdbcType=TIMESTAMP},
+      senderid = #{senderid,jdbcType=INTEGER},
+      is_read = #{isRead,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

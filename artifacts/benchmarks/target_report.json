@@ -1,0 +1,32 @@
+{
+  "targets": {
+    "recall_lift": 0.41,
+    "intent_accuracy": 0.923,
+    "p99_reduction": 0.42
+  },
+  "recall": {
+    "baseline_recall_at_k": 0.7857,
+    "candidate_recall_at_k": 0.8571,
+    "recall_relative_lift": 0.0909,
+    "k": 5,
+    "cases": 14
+  },
+  "intent": {
+    "intent_accuracy": 1.0,
+    "correct": 24,
+    "cases": 24,
+    "misrouted": []
+  },
+  "latency": {
+    "baseline_p99_ms": 278.0,
+    "candidate_p99_ms": 281.0,
+    "p99_latency_reduction": -0.0108,
+    "requests": 25
+  },
+  "checks": {
+    "recall_lift_target": false,
+    "intent_accuracy_target": true,
+    "p99_reduction_target": false
+  },
+  "passed": false
+}

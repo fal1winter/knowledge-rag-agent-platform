@@ -1,0 +1,15 @@
+{"case_id": "e1", "tenant_id": "tenant-a", "query": "RAPTOR 的层级索引是怎么解决长文档跨章节召回的", "expected_intent": "material_search", "expected_chunk_ids": ["kb-raptor"], "expected_facts": ["层级", "摘要"]}
+{"case_id": "e2", "tenant_id": "tenant-a", "query": "父节点摘要在 RAPTOR 检索里起什么作用", "expected_intent": "material_search", "expected_chunk_ids": ["kb-raptor"], "expected_facts": ["摘要", "粗召回"]}
+{"case_id": "e3", "tenant_id": "tenant-a", "query": "混合检索里 Milvus 和 Elasticsearch 各负责什么", "expected_intent": "material_search", "expected_chunk_ids": ["kb-hybrid"], "expected_facts": ["Milvus", "BM25"]}
+{"case_id": "e4", "tenant_id": "tenant-a", "query": "RRF 融合和 BGE 精排在检索链里的位置", "expected_intent": "material_search", "expected_chunk_ids": ["kb-hybrid"], "expected_facts": ["RRF", "精排"]}
+{"case_id": "e5", "tenant_id": "tenant-a", "query": "分层记忆是怎么避免上下文溢出的", "expected_intent": "material_search", "expected_chunk_ids": ["kb-memory"], "expected_facts": ["三层", "遗忘"]}
+{"case_id": "e6", "tenant_id": "tenant-a", "query": "RAG 评测闭环包含哪些环节", "expected_intent": "material_search", "expected_chunk_ids": ["kb-eval"], "expected_facts": ["规则", "Judge"]}
+{"case_id": "e7", "tenant_id": "tenant-a", "query": "降本策略具体怎么减少大模型调用", "expected_intent": "material_search", "expected_chunk_ids": ["kb-cost"], "expected_facts": ["缓存", "QLoRA"]}
+{"case_id": "e8", "tenant_id": "tenant-a", "query": "实体A和实体B之间的上下游依赖关系", "expected_intent": "entity_relation", "expected_chunk_ids": [], "expected_facts": ["关系", "依赖"]}
+{"case_id": "e9", "tenant_id": "tenant-a", "query": "Milvus 与混合检索之间是什么关联路径", "expected_intent": "entity_relation", "expected_chunk_ids": [], "expected_facts": ["关联", "路径"]}
+{"case_id": "e10", "tenant_id": "tenant-a", "query": "比较 RAPTOR 树状检索和平铺切片的召回差异并说明原因", "expected_intent": "complex_reasoning", "expected_chunk_ids": ["kb-raptor"], "expected_facts": ["比较", "差异"]}
+{"case_id": "e11", "tenant_id": "tenant-a", "query": "综合多份资料归因营收下滑的主要原因", "expected_intent": "complex_reasoning", "expected_chunk_ids": [], "expected_facts": ["综合", "归因"]}
+{"case_id": "e12", "tenant_id": "tenant-a", "query": "/agentic 跨章节推理混合检索为何优于单路召回", "expected_intent": "complex_reasoning", "expected_chunk_ids": ["kb-hybrid"], "expected_facts": ["推理"]}
+{"case_id": "e13", "tenant_id": "tenant-a", "query": "什么是 RRF", "expected_intent": "direct_qa", "expected_chunk_ids": ["kb-hybrid"], "expected_facts": ["RRF"]}
+{"case_id": "e14", "tenant_id": "tenant-a", "query": "BGE-Reranker 是用来做什么的", "expected_intent": "direct_qa", "expected_chunk_ids": ["kb-hybrid"], "expected_facts": ["精排"]}
+{"case_id": "e15", "tenant_id": "tenant-a", "query": "解释一下语义缓存", "expected_intent": "direct_qa", "expected_chunk_ids": ["kb-cost"], "expected_facts": ["缓存"]}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.bbs.user.persistence.mapper.VipOrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.liang.bbs.user.persistence.entity.VipOrderPo">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+        <result column="user_id" jdbcType="INTEGER" property="userId" />
+        <result column="plan_id" jdbcType="INTEGER" property="planId" />
+        <result column="plan_name" jdbcType="VARCHAR" property="planName" />
+        <result column="duration_days" jdbcType="INTEGER" property="durationDays" />
+        <result column="price" jdbcType="DECIMAL" property="price" />
+        <result column="expire_time" jdbcType="TIMESTAMP" property="expireTime" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, order_no, user_id, plan_id, plan_name, duration_days, price, expire_time, status, create_time
+    </sql>
+
+    <insert id="insert" parameterType="com.liang.bbs.user.persistence.entity.VipOrderPo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO vip_order (order_no, user_id, plan_id, plan_name, duration_days, price, expire_time, status, create_time)
+        VALUES (#{orderNo}, #{userId}, #{planId}, #{planName}, #{durationDays}, #{price}, #{expireTime}, #{status}, #{createTime})
+    </insert>
+
+    <select id="selectByOrderNo" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM vip_order
+        WHERE order_no = #{orderNo}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM vip_order
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countByUserId" resultType="long">
+        SELECT COUNT(*)
+        FROM vip_order
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>

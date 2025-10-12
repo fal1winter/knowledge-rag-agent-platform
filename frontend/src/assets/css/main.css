@@ -1,0 +1,54 @@
+html, body, #app {
+  min-height: 100%;
+  margin: 0;
+  background: #f5f7fb;
+  color: #1f2933;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 28px;
+}
+
+.brand {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.app-header .ant-menu {
+  flex: 1;
+}
+
+.app-content {
+  padding: 24px;
+}
+
+.fa {
+  display: inline-block;
+  font-style: normal;
+}
+
+.fa-shopping-cart::before { content: '🛒'; }
+.fa-comments::before { content: '💬'; }
+.fa-user::before { content: '👤'; }
+.fa-clock::before { content: '⏱'; }
+.fa-coins::before { content: '◎'; }
+.fa-dollar-sign::before { content: '¥'; }
+.fa-database::before { content: '▣'; }
+.fa-plus::before { content: '+'; }
+.fa-trash::before { content: '×'; }
+.fa-robot::before { content: 'AI'; }
+.fa-paper-plane::before { content: '➤'; }
+.fa-link::before { content: '#'; }
+.fa-lightbulb::before { content: '!'; }
+.fa-chevron-up::before { content: '⌃'; }
+.fa-chevron-down::before { content: '⌄'; }

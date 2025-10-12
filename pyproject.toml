@@ -1,0 +1,31 @@
+[project]
+name = "knowledge-rag-agent-platform"
+version = "0.1.0"
+description = "Enterprise knowledge-payment RAG conversation platform"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.110",
+  "pydantic>=2",
+  "uvicorn>=0.27",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+
+[project.optional-dependencies]
+prod = [
+  "pymilvus>=2.4",
+  "neo4j>=5.20",
+  "FlagEmbedding>=1.2.10",
+  "transformers>=4.41",
+  "datasets>=2.19",
+  "peft>=0.11",
+  "trl>=0.9",
+  "bitsandbytes>=0.43",
+  "accelerate>=0.30",
+]

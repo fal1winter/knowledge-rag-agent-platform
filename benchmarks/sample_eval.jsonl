@@ -1,0 +1,2 @@
+{"case_id":"route-1","tenant_id":"tenant-a","query":"/agentic 比较 RAPTOR 和混合检索","expected_intent":"complex_reasoning","expected_chunk_ids":[],"expected_facts":["RAPTOR","混合检索"]}
+{"case_id":"route-2","tenant_id":"tenant-a","query":"Neo4j 如何做多跳关系查询","expected_intent":"entity_relation","expected_chunk_ids":[],"expected_facts":["Neo4j","多跳"]}

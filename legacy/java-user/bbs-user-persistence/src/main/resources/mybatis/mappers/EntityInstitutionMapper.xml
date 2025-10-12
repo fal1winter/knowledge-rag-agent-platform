@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.bbs.user.persistence.mapper.EntityInstitutionMapper">
+
+    <resultMap id="BaseResultMap" type="com.liang.bbs.user.persistence.entity.EntityInstitutionPo">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="entity_type" jdbcType="VARCHAR" property="entityType" />
+        <result column="entity_id" jdbcType="BIGINT" property="entityId" />
+        <result column="institution_id" jdbcType="BIGINT" property="institutionId" />
+        <result column="relation_type" jdbcType="VARCHAR" property="relationType" />
+        <result column="is_primary" jdbcType="TINYINT" property="isPrimary" />
+        <result column="extra_data" jdbcType="VARCHAR" property="extraData" />
+        <result column="start_date" jdbcType="DATE" property="startDate" />
+        <result column="end_date" jdbcType="DATE" property="endDate" />
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, entity_type, entity_id, institution_id, relation_type, is_primary,
+        extra_data, start_date, end_date, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.liang.bbs.user.persistence.entity.EntityInstitutionPo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO entity_institution (entity_type, entity_id, institution_id, relation_type, is_primary,
+                                       extra_data, start_date, end_date, created_at, updated_at)
+        VALUES (#{entityType}, #{entityId}, #{institutionId}, #{relationType}, #{isPrimary},
+                #{extraData}, #{startDate}, #{endDate}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.liang.bbs.user.persistence.entity.EntityInstitutionPo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO entity_institution
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="entityType != null">entity_type,</if>
+            <if test="entityId != null">entity_id,</if>
+            <if test="institutionId != null">institution_id,</if>
+            <if test="relationType != null">relation_type,</if>
+            <if test="isPrimary != null">is_primary,</if>
+            <if test="extraData != null">extra_data,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="entityType != null">#{entityType},</if>
+            <if test="entityId != null">#{entityId},</if>
+            <if test="institutionId != null">#{institutionId},</if>
+            <if test="relationType != null">#{relationType},</if>
+            <if test="isPrimary != null">#{isPrimary},</if>
+            <if test="extraData != null">#{extraData},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+        </trim>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM entity_institution
+        WHERE id = #{id}
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.liang.bbs.user.persistence.entity.EntityInstitutionPo">
+        UPDATE entity_institution
+        <set>
+            <if test="entityType != null">entity_type = #{entityType},</if>
+            <if test="entityId != null">entity_id = #{entityId},</if>
+            <if test="institutionId != null">institution_id = #{institutionId},</if>
+            <if test="relationType != null">relation_type = #{relationType},</if>
+            <if test="isPrimary != null">is_primary = #{isPrimary},</if>
+            <if test="extraData != null">extra_data = #{extraData},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            updated_at = NOW(),
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.liang.bbs.user.persistence.entity.EntityInstitutionPo">
+        UPDATE entity_institution
+        SET entity_type = #{entityType},
+            entity_id = #{entityId},
+            institution_id = #{institutionId},
+            relation_type = #{relationType},
+            is_primary = #{isPrimary},
+            extra_data = #{extraData},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM entity_institution WHERE id = #{id}
+    </delete>
+
+    <select id="selectByEntity" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM entity_institution
+        WHERE entity_type = #{entityType} AND entity_id = #{entityId}
+        ORDER BY is_primary DESC, created_at ASC
+    </select>
+
+    <select id="selectByInstitution" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM entity_institution
+        WHERE institution_id = #{institutionId}
+        ORDER BY entity_type, created_at DESC
+    </select>
+
+    <select id="selectByInstitutionAndType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM entity_institution
+        WHERE institution_id = #{institutionId} AND entity_type = #{entityType}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="selectPrimaryByEntity" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM entity_institution
+        WHERE entity_type = #{entityType} AND entity_id = #{entityId} AND is_primary = 1
+        LIMIT 1
+    </select>
+
+    <select id="selectByEntityAndInstitution" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM entity_institution
+        WHERE entity_type = #{entityType} AND entity_id = #{entityId} AND institution_id = #{institutionId}
+        LIMIT 1
+    </select>
+
+    <delete id="deleteByEntity">
+        DELETE FROM entity_institution
+        WHERE entity_type = #{entityType} AND entity_id = #{entityId}
+    </delete>
+
+    <delete id="deleteByInstitution">
+        DELETE FROM entity_institution WHERE institution_id = #{institutionId}
+    </delete>
+
+    <delete id="deleteByEntityAndInstitution">
+        DELETE FROM entity_institution
+        WHERE entity_type = #{entityType} AND entity_id = #{entityId} AND institution_id = #{institutionId}
+    </delete>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO entity_institution (entity_type, entity_id, institution_id, relation_type, is_primary,
+                                       extra_data, start_date, end_date, created_at, updated_at)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.entityType}, #{item.entityId}, #{item.institutionId}, #{item.relationType}, #{item.isPrimary},
+             #{item.extraData}, #{item.startDate}, #{item.endDate}, #{item.createdAt}, #{item.updatedAt})
+        </foreach>
+    </insert>
+
+</mapper>

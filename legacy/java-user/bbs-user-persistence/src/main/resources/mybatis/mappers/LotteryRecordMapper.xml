@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liang.bbs.user.persistence.mapper.LotteryRecordMapper">
+  <resultMap id="BaseResultMap" type="com.liang.bbs.user.persistence.entity.LotteryRecordPo">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="user_id" jdbcType="BIGINT" property="userId"/>
+    <result column="prize" jdbcType="VARCHAR" property="prize"/>
+    <result column="prize_type" jdbcType="VARCHAR" property="prizeType"/>
+    <result column="draw_time" jdbcType="TIMESTAMP" property="drawTime"/>
+  </resultMap>
+</mapper>
