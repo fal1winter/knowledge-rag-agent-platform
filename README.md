@@ -4,7 +4,7 @@
 
 Milvus、Elasticsearch、Neo4j、Qwen、OCR、ASR 等外部能力均以 adapter 形式接入。项目可以在不启动这些外部服务的情况下阅读整体链路；生产部署时替换对应 adapter 即可。
 
-## Directory
+## 目录结构
 
 ```text
 knowledge-rag-agent-platform/
@@ -35,7 +35,7 @@ knowledge-rag-agent-platform/
     DEPLOYMENT.md
 ```
 
-## Main Capabilities
+## 核心能力
 
 - Java 网关：`java-gateway/` 负责资料购买、积分扣减、支付宝/微信支付创建与回调、资料订单金额校验、RAG 转发。
 - 前端闭环：`frontend/` 覆盖资料列表、详情、上传、订单、资料对话与支付入口。
@@ -52,7 +52,7 @@ knowledge-rag-agent-platform/
 - 评测闭环：`evaluation/` 包含规则过滤、LLM-as-Judge、Pairwise A/B、Bad Case 归因。
 - 降本与记忆：`cost/model_policy.py`、`memory/layered_memory.py`、`knowledge/freshness.py`。
 
-## Imported Modules
+## 引入的既有模块
 
 既有资料系统相关模块放在 `legacy/` 中，用于保留前后端接口和服务实现的上下文：
 
@@ -63,7 +63,7 @@ knowledge-rag-agent-platform/
 
 这些文件没有被原地修改，也不会影响当前运行服务。
 
-## Deployment
+## 部署
 
 部署步骤见 `docs/DEPLOYMENT.md`。本地 API 入口：
 
@@ -84,13 +84,13 @@ npm install
 npm run serve
 ```
 
-## Static Check
+## 静态检查
 
 ```bash
 python3 -m py_compile $(find src -name '*.py')
 ```
 
-## Notes
+## 说明
 
 `examples/offline_flow.py` 展示无外部依赖的离线流程。实际生产部署时，将 adapter 接入真实 Milvus、Elasticsearch、Neo4j、Qwen/vLLM、OCR、ASR 服务即可。
 

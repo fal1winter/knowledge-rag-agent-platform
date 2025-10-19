@@ -1,8 +1,10 @@
-# Deployment
+# 部署指南
 
-This service is adapter-driven. Local deployment can start the API and inspect the full request path without Milvus, Elasticsearch, Neo4j, Qwen, OCR, or ASR being live. Production deployment keeps the same entrypoint and replaces adapter implementations or points them to real services.
+本服务采用 adapter 驱动架构。本地部署可以在不启动 Milvus、Elasticsearch、Neo4j、
+Qwen、OCR、ASR 的情况下启动 API 并检视完整请求链路。生产部署保持相同入口，
+替换 adapter 实现或将其指向真实服务即可。
 
-## Local API
+## 本地 API 启动
 
 ```bash
 cd /home/sun/knowledge-rag-agent-platform
@@ -14,21 +16,21 @@ cp .env.example .env
 uvicorn rag_agent_platform.api.run:app --host 0.0.0.0 --port 8080
 ```
 
-Health check:
+健康检查：
 
 ```bash
 curl http://127.0.0.1:8080/health
 ```
 
-Offline flow without external services:
+无外部依赖的离线流程：
 
 ```bash
 PYTHONPATH=src python3 examples/offline_flow.py
 ```
 
-## Runtime Configuration
+## 运行时配置
 
-Configure service addresses with environment variables or a process manager:
+通过环境变量或进程管理器配置服务地址：
 
 ```bash
 export MILVUS_URI=http://127.0.0.1:19530
@@ -41,21 +43,26 @@ export OCR_ENDPOINT=http://127.0.0.1:8090/ocr
 export ASR_ENDPOINT=http://127.0.0.1:8091/transcribe
 ```
 
-The default bootstrap registers parser, chunker, RAPTOR tree builder, Milvus dense adapter, Elasticsearch BM25 adapter, Neo4j adapter, Qwen adapters, reranker, router, and answer service. Image OCR and media ASR are wired through HTTP clients in `bootstrap.py`. Legacy `.doc` and `.ppt` files are converted through LibreOffice `soffice` before extraction.
+默认的 bootstrap 注册了解析器、切片器、RAPTOR 树构建器、Milvus 稠密 adapter、
+Elasticsearch BM25 adapter、Neo4j adapter、Qwen adapter、精排器、路由器和回答服务。
+图片 OCR 和媒体 ASR 通过 `bootstrap.py` 中的 HTTP 客户端接入。
+旧版 `.doc` 和 `.ppt` 文件通过 LibreOffice `soffice` 转换后再提取。
 
-## External Services
+## 外部服务
 
-- Milvus: vector index for leaf and RAPTOR summary nodes.
-- Elasticsearch: BM25 sparse index for leaf chunks.
-- Neo4j: entity and relationship graph for multi-hop retrieval.
-- Qwen/vLLM: intent classification, query rewriting, and answer generation endpoints.
-- OCR/ASR: parser-side adapters for image, audio, and video assets.
+- Milvus：叶子 chunk 和 RAPTOR 摘要节点的向量索引。
+- Elasticsearch：叶子 chunk 的 BM25 稀疏索引。
+- Neo4j：实体和关系图，用于多跳检索。
+- Qwen/vLLM：意图分类、查询改写和回答生成端点。
+- OCR/ASR：解析侧 adapter，用于图片、音频和视频资产。
 
-The adapter files already show the call sites and request shapes. For a real deployment, wire `retrieval/*_adapter.py`, `generation/llm_client.py`, and the OCR/ASR clients to the concrete SDKs or HTTP services used in the target environment.
+adapter 文件已展示调用位置和请求格式。实际部署时，将
+`retrieval/*_adapter.py`、`generation/llm_client.py` 及 OCR/ASR 客户端
+接入目标环境的 SDK 或 HTTP 服务即可。
 
-## Process Manager
+## 进程管理
 
-Example systemd unit:
+systemd unit 示例：
 
 ```ini
 [Unit]
@@ -73,9 +80,9 @@ RestartSec=3
 WantedBy=multi-user.target
 ```
 
-## Ingestion And Query APIs
+## 入库与查询接口
 
-Ingest one document:
+摄入一个文档：
 
 ```bash
 curl -X POST http://127.0.0.1:8080/api/knowledge/ingest \
@@ -83,7 +90,7 @@ curl -X POST http://127.0.0.1:8080/api/knowledge/ingest \
   -d '{"document_id":"doc-1","tenant_id":"tenant-a","uri":"/path/to/doc.md","file_type":"md","title":"doc"}'
 ```
 
-Ask a question:
+提问：
 
 ```bash
 curl -X POST http://127.0.0.1:8080/api/chat \
@@ -91,10 +98,10 @@ curl -X POST http://127.0.0.1:8080/api/chat \
   -d '{"tenant_id":"tenant-a","user_id":"user-a","message":"/agentic 比较 RAPTOR 和混合检索"}'
 ```
 
+## Java 网关
 
-## Java Gateway
-
-The Java gateway is the browser-facing business entrypoint for user credits, material purchase, Alipay/WeChat payment creation and payment callback handling, material-order amount validation, and RAG forwarding.
+Java 网关是面向浏览器的业务入口，负责用户积分、素材购买、支付宝/微信支付创建与回调、
+素材订单金额校验和 RAG 转发。
 
 ```bash
 cd /home/sun/knowledge-rag-agent-platform/java-gateway
@@ -106,7 +113,7 @@ export WECHAT_PAY_ENABLED=false
 mvn spring-boot:run
 ```
 
-Payment environment variables:
+支付环境变量：
 
 ```bash
 export ALIPAY_APP_ID=
@@ -122,7 +129,7 @@ export WECHAT_PAY_PRIVATE_KEY_PATH=/secure/path/apiclient_key.pem
 export WECHAT_PAY_NOTIFY_URL=https://your-domain/api/payments/wechat/notify
 ```
 
-## Frontend
+## 前端
 
 ```bash
 cd /home/sun/knowledge-rag-agent-platform/frontend
@@ -131,4 +138,4 @@ npm install
 npm run serve
 ```
 
-The frontend calls the Java gateway through `/api`. It includes material listing, material upload, material detail purchase, order list payment, and material chat views.
+前端通过 `/api` 调用 Java 网关，包含素材列表、素材上传、素材详情购买、订单列表支付和素材对话视图。
