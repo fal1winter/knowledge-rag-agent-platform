@@ -1,96 +1,160 @@
 # Knowledge RAG Agent Platform
 
-面向知识付费场景的企业级 RAG 对话平台。该目录是独立项目，未修改当前正在运行的 Java/Python 服务文件。
+面向知识付费场景的企业级 RAG 对话平台，支持多格式文档入库、RAPTOR 树状层级检索、多路召回融合、Agentic 迭代推理和端到端评测闭环。
 
-Milvus、Elasticsearch、Neo4j、Qwen、OCR、ASR 等外部能力均以 adapter 形式接入。项目可以在不启动这些外部服务的情况下阅读整体链路；生产部署时替换对应 adapter 即可。
+## 技术栈
+
+| 层级 | 技术选型 |
+|------|----------|
+| 业务网关 | Spring Boot 2.7 / JWT 鉴权 / 支付宝 & 微信支付 SDK |
+| RAG 引擎 | Python 3.10+ / FastAPI / SSE 流式输出 |
+| 向量检索 | Milvus（稠密） + Elasticsearch（BM25 稀疏） |
+| 知识图谱 | Neo4j（多跳实体关系查询） |
+| 大模型 | Qwen2.5 系列（意图分类 / 查询改写 / 回答生成） |
+| 精排 | BGE-Reranker |
+| 索引结构 | RAPTOR 自底向上 k-means 聚类树状摘要 |
+| 前端 | Vue 3 + Axios |
+
+## 系统架构
+
+```
+┌───────────┐       ┌──────────────┐       ┌─────────────────────────────┐
+│  Vue 前端  │──────▶│  Java 网关   │──────▶│      Python RAG 引擎        │
+└───────────┘       │  (鉴权/支付/ │       │  ┌───────┐  ┌───────────┐  │
+                    │   会话管理)   │       │  │Router │─▶│ Retrieval │  │
+                    └──────────────┘       │  └───────┘  └─────┬─────┘  │
+                                           │                   │        │
+                                           │  ┌────────────────▼─────┐  │
+                                           │  │ Milvus│ES│Neo4j│RRF  │  │
+                                           │  └────────────────┬─────┘  │
+                                           │  ┌────────────────▼─────┐  │
+                                           │  │  BGE Rerank + Agent  │  │
+                                           │  └────────────────┬─────┘  │
+                                           │  ┌────────────────▼─────┐  │
+                                           │  │  Generation (Qwen)   │  │
+                                           │  └──────────────────────┘  │
+                                           └─────────────────────────────┘
+```
+
+## 核心特性
+
+- **RAPTOR 树状层级检索** — 自底向上 k-means 聚类构建多层摘要节点，支持粗召回 + 精准下钻
+- **三级意图路由** — 规则指令 → 关键词匹配 → Qwen 轻量模型，分层递进降低推理开销
+- **混合检索 + RRF 融合** — Milvus 稠密向量 + Elasticsearch BM25 双路召回，Reciprocal Rank Fusion 排序
+- **BGE 精排** — 对融合结果做 cross-encoder 重排序，提升 top-k 精准度
+- **Neo4j 知识图谱** — 实体关系建模，支持多跳 Cypher 查询
+- **Agentic 迭代检索** — 对复杂推理类问题执行多轮检索-反思循环
+- **端到端评测** — 规则过滤 + LLM-as-Judge + Pairwise A/B 灰度 + Bad Case 归因
+- **三层记忆机制** — 短期对话 / 会话摘要 / 长期用户画像，加权指数衰减遗忘
+- **多格式文档解析** — PDF / Word / PPT / Excel / 图片 OCR / 音视频 ASR
+- **JWT 鉴权 + 租户隔离** — 网关层统一身份校验，检索层强制 tenant_id 过滤
+- **素材购买权限** — 对话前校验用户是否持有目标素材的访问权
+- **流式输出** — SSE 逐 token 推送，降低首字等待时间
+- **支付闭环** — 支付宝 / 微信支付创建与异步回调，积分扣减与充值
 
 ## 目录结构
 
 ```text
-knowledge-rag-agent-platform/
-  java-gateway/          Java 业务网关：用户积分、资料购买、支付宝/微信支付、RAG 转发
-  frontend/              Vue 最小前端：资料列表/上传/购买/订单/资料对话
-  src/rag_agent_platform/
-    api/                 FastAPI 应用入口
-    ingestion/           文档解析、切片、RAPTOR 建树、索引写入流水线
-    documents/           PDF/Word/PPT/Excel/图片/音视频解析与切片
-    raptor/              RAPTOR 树状层级索引与下钻检索
-    routing/             三级意图路由、控制指令、查询改写
-    retrieval/           Milvus、Elasticsearch、Neo4j、RRF、BGE rerank、Agentic 检索
-    generation/          Agent 编排、Qwen 调用适配、引用生成
-    evaluation/          规则评测、LLM-as-Judge、A/B、Bad Case
-    memory/              三层用户记忆与权重遗忘
-    knowledge/           静态知识库时效巡检
-    cost/                轻量模型和调用降本策略
-    storage/             离线内存适配器
-  legacy/
-    python-rag-service/  从现有 /home/sun/javabackend/rag-service 保留的服务模块
-    java-material/       从现有 Java 资料系统保留的控制器/服务/SQL
-    java-user/           从现有 Java 用户系统保留的用户、OAuth、积分服务和持久层
-    java-rest-user/      从现有 Java REST 层保留的用户、OAuth、积分入口
-    frontend-material/   从现有 vue3web 保留的资料页面和 service
-  docs/
-    ARCHITECTURE.md
-    CAPABILITIES.md
-    DEPLOYMENT.md
+java-gateway/                  Java 业务网关
+  auth/                        JWT 鉴权、权限校验
+  controller/                  REST 接口（RAG 对话、会话管理、用户、支付）
+  payment/                     支付宝 / 微信支付 Provider
+  rag/                         RAG 服务调用客户端、会话存储、流式客户端
+  order/                       素材订单网关
+  user/                        用户积分网关
+
+frontend/                      Vue 前端
+  src/components/material/     资料列表 / 详情 / 上传 / 订单 / 对话
+
+src/rag_agent_platform/        Python RAG 引擎
+  api/                         FastAPI 应用入口 + 网关信任中间件
+  ingestion/                   文档解析 → 切片 → RAPTOR 建树 → 索引写入
+  documents/                   多格式 Loader + 语义切片
+  raptor/                      RAPTOR 树状索引构建与检索
+  routing/                     意图路由 / 控制指令 / 查询改写
+  retrieval/                   Milvus / Elasticsearch / Neo4j / RRF / Reranker / Agentic
+  generation/                  Agent 编排 + Qwen LLM 调用适配
+  evaluation/                  规则 / LLM-Judge / A-B / Bad Case
+  memory/                      三层记忆与遗忘策略
+  knowledge/                   静态知识时效巡检
+  cost/                        轻量模型调度与降本策略
+
+datasets/                      训练数据（意图分类 / 查询改写样本）
+benchmarks/                    评测数据集与指标验证脚本
+docs/                          架构、能力矩阵、部署文档
 ```
 
-## 核心能力
+## 快速开始
 
-- Java 网关：`java-gateway/` 负责资料购买、积分扣减、支付宝/微信支付创建与回调、资料订单金额校验、RAG 转发。
-- 前端闭环：`frontend/` 覆盖资料列表、详情、上传、订单、资料对话与支付入口。
-- 多格式解析：`documents/loaders.py` 覆盖 PDF、Word、PPT、Excel、图片 OCR、音视频 ASR。
-- 入库流水线：`ingestion/pipeline.py` 串联解析、切片、RAPTOR 建树、Milvus/Elasticsearch/Neo4j 写入。
-- RAPTOR：`raptor/tree_index.py` 自底向上构建树状摘要节点，`raptor/retriever.py` 做粗召回和精准下钻。
-- 三级意图路由：`routing/intent_router.py` 按“规则指令 -> 关键词匹配 -> Qwen 轻量模型”分发。
-- 控制指令：`routing/commands.py` 支持 `/clear`、`/context`、`/agentic`。
-- 精准块检索：`retrieval/precise.py` 面向简单问答返回紧凑叶子块。
-- 混合检索：`retrieval/hybrid.py` 融合 Milvus 稠密检索和 Elasticsearch BM25，`retrieval/rrf.py` 做 RRF。
-- 精排：`retrieval/reranker.py` 对接 BGE-Reranker。
-- 知识图谱：`retrieval/neo4j_adapter.py` 保留 Neo4j 多跳查询 Cypher 调用位置。
-- 复杂推理：`retrieval/agentic.py` 实现迭代检索。
-- 评测闭环：`evaluation/` 包含规则过滤、LLM-as-Judge、Pairwise A/B、Bad Case 归因。
-- 降本与记忆：`cost/model_policy.py`、`memory/layered_memory.py`、`knowledge/freshness.py`。
+### 环境要求
 
-## 引入的既有模块
+- Python 3.10+
+- Java 8+ / Maven 3.6+
+- Node.js 16+
 
-既有资料系统相关模块放在 `legacy/` 中，用于保留前后端接口和服务实现的上下文：
-
-- Python RAG：`legacy/python-rag-service/`
-- Java 资料系统：`legacy/java-material/`
-- Java 用户/积分系统：`legacy/java-user/`、`legacy/java-rest-user/`
-- 前端资料系统：`legacy/frontend-material/`
-
-这些文件没有被原地修改，也不会影响当前运行服务。
-
-## 部署
-
-部署步骤见 `docs/DEPLOYMENT.md`。本地 API 入口：
+### Python RAG 引擎
 
 ```bash
-cd /home/sun/knowledge-rag-agent-platform
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-pip install -e .
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e .
 cp .env.example .env
+# 编辑 .env 配置 Milvus / ES / Neo4j / Qwen 端点
 uvicorn rag_agent_platform.api.run:app --host 0.0.0.0 --port 8080
-
-cd /home/sun/knowledge-rag-agent-platform/java-gateway
-mvn spring-boot:run
-
-cd /home/sun/knowledge-rag-agent-platform/frontend
-npm install
-npm run serve
 ```
 
-## 静态检查
+### Java 网关
 
 ```bash
-python3 -m py_compile $(find src -name '*.py')
+cd java-gateway
+# 配置环境变量或修改 application.yml
+mvn spring-boot:run
 ```
 
-## 说明
+### 前端
 
-`examples/offline_flow.py` 展示无外部依赖的离线流程。实际生产部署时，将 adapter 接入真实 Milvus、Elasticsearch、Neo4j、Qwen/vLLM、OCR、ASR 服务即可。
+```bash
+cd frontend
+cp .env.example .env.local
+npm install && npm run serve
+```
 
+## 配置项
+
+主要环境变量参考 `.env.example` 和 `java-gateway/src/main/resources/application.yml`：
+
+| 变量 | 说明 |
+|------|------|
+| `MILVUS_URI` | Milvus 向量数据库地址 |
+| `ELASTICSEARCH_URL` | Elasticsearch BM25 索引地址 |
+| `NEO4J_URI` | Neo4j 图数据库 Bolt 地址 |
+| `QWEN_ANSWER_ENDPOINT` | Qwen 回答生成 vLLM 端点 |
+| `JWT_SECRET` | 网关 JWT 签名密钥 |
+| `GATEWAY_INTERNAL_SECRET` | 网关→RAG 引擎内部通信密钥 |
+
+完整配置说明见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。
+
+## 评测
+
+```bash
+# 运行检索评测
+PYTHONPATH=src python3 scripts/run_rag_benchmark.py \
+  --dataset benchmarks/sample_eval.jsonl \
+  --output artifacts/benchmarks/candidate.json
+
+# 对比基线
+python3 scripts/compare_retrieval_ab.py \
+  --baseline artifacts/benchmarks/baseline.json \
+  --candidate artifacts/benchmarks/candidate.json
+```
+
+评测指标包括 recall@k、意图路由准确率、P50/P99 延迟、LLM-Judge 评分。
+
+## 文档
+
+- [系统架构](docs/ARCHITECTURE.md)
+- [能力矩阵](docs/CAPABILITIES.md)
+- [部署指南](docs/DEPLOYMENT.md)
+
+## License
+
+MIT
