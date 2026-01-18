@@ -155,8 +155,41 @@ class RaptorTreeBuilder:
         return f"{children[0].document_id}:raptor:L{level}:{cluster_index}:{digest}"
 
 
+class DeepSeekRaptorSummarizer:
+    """通过 DeepSeek（硅基流动 SiliconFlow）生成 RAPTOR 父节点摘要。
+
+    RAPTOR 摘要属于复杂生成任务，路由到 DeepSeek 大模型。
+    API 不可达时降级到抽取式摘要。
+    """
+
+    def __init__(self, endpoint: str, api_key: str = "", model: str = "deepseek-ai/DeepSeek-V3", fallback: Summarizer | None = None):
+        self.endpoint = endpoint
+        self.model = model
+        self.client = OpenAICompatibleClient(endpoint, api_key=api_key or None, timeout=90.0) if endpoint else None
+        self.fallback = fallback or ExtractiveSummarizer()
+
+    def summarize(self, texts: List[str], max_words: int = 180) -> str:
+        if self.client is None:
+            return self.fallback.summarize(texts, max_words)
+        payload = {
+            "max_words": max_words,
+            "chunks": texts,
+            "instruction": "Summarize the shared topic of these document chunks for hierarchical retrieval. Preserve entities, numbers, and section themes.",
+        }
+        messages = [
+            {"role": "system", "content": "You create concise RAPTOR parent-node summaries for RAG retrieval."},
+            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+        ]
+        try:
+            summary = self.client.chat(self.model, messages, temperature=0.0)
+        except Exception:
+            return self.fallback.summarize(texts, max_words)
+        words = summary.split()
+        return summary if len(words) <= max_words else " ".join(words[:max_words])
+
+
 class QwenRaptorSummarizer:
-    """通过 Qwen 模型生成 RAPTOR 父节点摘要。"""
+    """通过本地 Qwen 模型生成 RAPTOR 父节点摘要（备用，仅离线测试使用）。"""
 
     def __init__(self, endpoint: str, model: str = "Qwen2.5-7B-Instruct", api_key: str | None = None, fallback: Summarizer | None = None):
         self.endpoint = endpoint

@@ -1,4 +1,9 @@
-"""轻量模型路由策略、QLoRA 训练配方与向量化调用优化。"""
+"""轻量模型路由策略、QLoRA 训练配方与向量化调用优化。
+
+模型分层策略：
+- 简单任务（意图分类、查询改写）：本地部署 Qwen QLoRA 微调模型，低延迟低成本
+- 复杂任务（回答生成、RAPTOR 摘要、质量评估）：DeepSeek via 硅基流动 API，推理能力强
+"""
 
 from __future__ import annotations
 
@@ -75,12 +80,15 @@ class EmbeddingBudgetDecision:
 
 
 class CostAwareModelPolicy:
-    """将低复杂度任务路由到微调适配器，保留大模型调用给生成合成任务。"""
+    """将低复杂度任务路由到本地 QLoRA 适配器，复杂推理/生成任务路由到 DeepSeek (硅基流动)。"""
 
     def __init__(self):
+        # 简单任务 — 本地部署 Qwen QLoRA 微调
         self.intent_model = "Qwen2.5-1.5B-Instruct-QLoRA"
         self.rewrite_model = "Qwen2.5-7B-Instruct-QLoRA"
-        self.answer_model = "Qwen2.5-7B-Instruct"
+        # 复杂任务 — DeepSeek via 硅基流动 SiliconFlow API
+        self.answer_model = "deepseek-ai/DeepSeek-V3"
+        self.summarizer_model = "deepseek-ai/DeepSeek-V3"
         self._recipes = {
             "intent": QLoRARecipe(
                 task="intent",
@@ -102,10 +110,10 @@ class CostAwareModelPolicy:
 
     def choose_for_intent(self, intent: IntentType) -> ModelChoice:
         if intent in {IntentType.CONTROL, IntentType.DIRECT_QA, IntentType.MATERIAL_SEARCH}:
-            return ModelChoice("intent_or_simple_answer", self.intent_model, "low-complexity request")
+            return ModelChoice("intent_or_simple_answer", self.intent_model, "低复杂度，本地 Qwen QLoRA 处理")
         if intent == IntentType.COMPLEX_REASONING:
-            return ModelChoice("rewrite_and_plan", self.rewrite_model, "requires decomposition")
-        return ModelChoice("grounded_answer", self.answer_model, "default answer model")
+            return ModelChoice("deepseek_reasoning", self.answer_model, "复杂推理，路由到 DeepSeek via SiliconFlow")
+        return ModelChoice("deepseek_grounded_answer", self.answer_model, "生成回答，路由到 DeepSeek via SiliconFlow")
 
     def training_recipe(self, task: str) -> QLoRARecipe:
         if task not in self._recipes:

@@ -7,18 +7,24 @@ from typing import List
 
 @dataclass
 class ModelConfig:
+    # --- 本地部署轻量模型（简单任务：意图分类、查询改写） ---
     intent_endpoint: str = os.getenv("QWEN_INTENT_ENDPOINT", "http://127.0.0.1:8001/v1")
     rewrite_endpoint: str = os.getenv("QWEN_REWRITE_ENDPOINT", "http://127.0.0.1:8000/v1")
-    answer_endpoint: str = os.getenv("QWEN_ANSWER_ENDPOINT", "http://127.0.0.1:8002/v1")
     intent_model: str = os.getenv("QWEN_INTENT_MODEL", "Qwen2.5-1.5B-Instruct-QLoRA")
     rewrite_model: str = os.getenv("QWEN_REWRITE_MODEL", "Qwen2.5-7B-Instruct-QLoRA")
-    answer_model: str = os.getenv("QWEN_ANSWER_MODEL", "Qwen2.5-7B-Instruct")
-    embedding_endpoint: str = os.getenv("QWEN_EMBEDDING_ENDPOINT", "http://127.0.0.1:8003/v1")
+
+    # --- SiliconFlow 托管 DeepSeek（复杂推理/生成任务） ---
+    deepseek_endpoint: str = os.getenv("SILICONFLOW_ENDPOINT", "https://api.siliconflow.cn/v1")
+    deepseek_api_key: str = os.getenv("SILICONFLOW_API_KEY", "")
+    answer_model: str = os.getenv("DEEPSEEK_ANSWER_MODEL", "deepseek-ai/DeepSeek-V2.5")
+    summarizer_model: str = os.getenv("DEEPSEEK_SUMMARIZER_MODEL", "deepseek-ai/DeepSeek-V2.5")
+    judge_model: str = os.getenv("DEEPSEEK_JUDGE_MODEL", "deepseek-ai/DeepSeek-V2.5")
+
+    # --- 向量化与精排（本地部署） ---
+    embedding_endpoint: str = os.getenv("EMBEDDING_ENDPOINT", "http://127.0.0.1:8003/v1")
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-large-zh-v1.5")
     rerank_endpoint: str = os.getenv("RERANK_ENDPOINT", "http://127.0.0.1:8004/rerank")
     reranker_model: str = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
-    summarizer_endpoint: str = os.getenv("QWEN_SUMMARIZER_ENDPOINT", "http://127.0.0.1:8002/v1")
-    summarizer_model: str = os.getenv("QWEN_SUMMARIZER_MODEL", "Qwen2.5-7B-Instruct")
     embedding_batch_size: int = 64
 
 

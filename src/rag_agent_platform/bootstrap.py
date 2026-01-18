@@ -19,11 +19,12 @@ from rag_agent_platform.documents.loaders import (
 )
 from rag_agent_platform.generation.agent import AgentDependencies, KnowledgeRagAgent
 from rag_agent_platform.generation.answer_service import AnswerService
-from rag_agent_platform.generation.llm_client import QwenChatAdapter
+from rag_agent_platform.generation.llm_client import DeepSeekChatAdapter, QwenChatAdapter
 from rag_agent_platform.ingestion.entity_extractor import HeuristicEntityExtractor, LLMEntityExtractor
 from rag_agent_platform.ingestion.pipeline import KnowledgeIngestionPipeline
 from rag_agent_platform.raptor.retriever import RaptorRetriever
 from rag_agent_platform.raptor.tree_index import (
+    DeepSeekRaptorSummarizer,
     ExtractiveSummarizer,
     InMemoryRaptorStore,
     QwenRaptorSummarizer,
@@ -104,10 +105,13 @@ def _graph_fallback() -> LocalGraphRetriever | None:
     return LocalGraphRetriever() if load_config().enable_local_fallback else None
 
 
-def _build_raptor_summarizer() -> QwenRaptorSummarizer:
+def _build_raptor_summarizer():
+    """RAPTOR 摘要属于复杂生成任务，使用 DeepSeek via SiliconFlow。"""
     config = load_config()
-    return QwenRaptorSummarizer(
-        endpoint=config.models.summarizer_endpoint,
+    from rag_agent_platform.raptor.tree_index import DeepSeekRaptorSummarizer
+    return DeepSeekRaptorSummarizer(
+        endpoint=config.models.deepseek_endpoint,
+        api_key=config.models.deepseek_api_key,
         model=config.models.summarizer_model,
         fallback=ExtractiveSummarizer(),
     )
@@ -180,7 +184,11 @@ def build_agent(
         intent_model=QwenIntentClassifier(endpoint=config.models.intent_endpoint, model=config.models.intent_model),
     )
     answer_service = AnswerService(
-        QwenChatAdapter(endpoint=config.models.answer_endpoint, model=config.models.answer_model)
+        DeepSeekChatAdapter(
+            endpoint=config.models.deepseek_endpoint,
+            api_key=config.models.deepseek_api_key,
+            model=config.models.answer_model,
+        )
     )
     return KnowledgeRagAgent(
         AgentDependencies(

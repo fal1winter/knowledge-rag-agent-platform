@@ -231,7 +231,7 @@ class AgenticRetriever:
 class LLMQueryPlanner:
     """基于 LLM 的子查询规划器。
 
-    调用 Qwen2.5-7B-Instruct 分析已有证据缺口，
+    调用 DeepSeek (硅基流动) 分析已有证据缺口，
     生成针对性子查询填补空白。
     """
 
@@ -371,7 +371,7 @@ class ScoreBasedQualityAssessor:
 class LLMQualityAssessor:
     """基于 LLM 的检索质量评估器。
 
-    调用 Qwen 判断当前证据是否足以回答用户问题，
+    调用 DeepSeek (硅基流动) 判断当前证据是否足以回答用户问题，
     输出覆盖度打分和缺失维度分析。
     """
 

@@ -12,7 +12,7 @@
 | 三级意图路由 | `routing/intent_router.py` |
 | `/clear`、`/context`、`/agentic` 控制指令 | `routing/commands.py`、`generation/agent.py` |
 | 口语化改写与共指填充 | `routing/query_optimizer.py` |
-| Qwen2.5 轻量模型集成 | `routing/intent_router.py`、`routing/query_optimizer.py`、`generation/llm_client.py`、`cost/model_policy.py` |
+| 双模型分层路由（本地 Qwen QLoRA + DeepSeek 硅基流动） | `routing/intent_router.py`、`routing/query_optimizer.py`、`generation/llm_client.py`、`cost/model_policy.py` |
 | 简单问答精准块检索 | `retrieval/precise.py`、`generation/agent.py` |
 | Neo4j 实体关系多跳查询 | `retrieval/neo4j_adapter.py` |
 | 复杂推理迭代检索 | `retrieval/agentic.py` |

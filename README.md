@@ -10,7 +10,7 @@
 | RAG 引擎 | Python 3.10+ / FastAPI / SSE 流式输出 |
 | 向量检索 | Milvus（稠密） + Elasticsearch（BM25 稀疏） |
 | 知识图谱 | Neo4j（多跳实体关系查询） |
-| 大模型 | Qwen2.5 系列（意图分类 / 查询改写 / 回答生成） |
+| 大模型 | DeepSeek (硅基流动 SiliconFlow) 复杂推理/生成 + 本地 Qwen QLoRA 轻量任务 |
 | 精排 | BGE-Reranker |
 | 索引结构 | RAPTOR 自底向上 k-means 聚类树状摘要 |
 | 前端 | Vue 3 + Axios |
@@ -31,7 +31,7 @@
                                            │  │  BGE Rerank + Agent  │  │
                                            │  └────────────────┬─────┘  │
                                            │  ┌────────────────▼─────┐  │
-                                           │  │  Generation (Qwen)   │  │
+                                           │  │  Generation (DeepSeek)│  │
                                            │  └──────────────────────┘  │
                                            └─────────────────────────────┘
 ```
@@ -73,7 +73,7 @@ src/rag_agent_platform/        Python RAG 引擎
   raptor/                      RAPTOR 树状索引构建与检索
   routing/                     意图路由 / 控制指令 / 查询改写
   retrieval/                   Milvus / Elasticsearch / Neo4j / RRF / Reranker / Agentic
-  generation/                  Agent 编排 + Qwen LLM 调用适配
+  generation/                  Agent 编排 + DeepSeek/Qwen 双模型 LLM 调用适配
   evaluation/                  规则 / LLM-Judge / A-B / Bad Case
   memory/                      三层记忆与遗忘策略
   knowledge/                   静态知识时效巡检
@@ -127,7 +127,9 @@ npm install && npm run serve
 | `MILVUS_URI` | Milvus 向量数据库地址 |
 | `ELASTICSEARCH_URL` | Elasticsearch BM25 索引地址 |
 | `NEO4J_URI` | Neo4j 图数据库 Bolt 地址 |
-| `QWEN_ANSWER_ENDPOINT` | Qwen 回答生成 vLLM 端点 |
+| `DEEPSEEK_ENDPOINT` | DeepSeek 推理/生成 API 端点（硅基流动） |
+| `DEEPSEEK_API_KEY` | 硅基流动 API 密钥 |
+| `QWEN_INTENT_ENDPOINT` | 本地 Qwen 意图分类 vLLM 端点 |
 | `JWT_SECRET` | 网关 JWT 签名密钥 |
 | `GATEWAY_INTERNAL_SECRET` | 网关→RAG 引擎内部通信密钥 |
 

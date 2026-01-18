@@ -1,7 +1,18 @@
 # 架构说明
 
 本项目为独立的知识付费 RAG Agent 平台。外部基础设施均以 adapter 形式接入，
-Milvus、Elasticsearch、Neo4j、Qwen、OCR、ASR 等服务在本地审查时无需实际启动。
+Milvus、Elasticsearch、Neo4j、DeepSeek (硅基流动)、本地 Qwen、OCR、ASR 等服务在本地审查时无需实际启动。
+
+## 模型分层
+
+| 任务类型 | 模型 | 部署方式 | 说明 |
+|---------|------|---------|------|
+| 意图分类 | Qwen2.5-1.5B-Instruct-QLoRA | 本地 vLLM | 低延迟，QLoRA 微调 |
+| 查询改写 | Qwen2.5-7B-Instruct-QLoRA | 本地 vLLM | 低成本指代消解 |
+| 回答生成 | DeepSeek-V3 | 硅基流动 API | 复杂推理能力强 |
+| RAPTOR 摘要 | DeepSeek-V3 | 硅基流动 API | 跨文档语义聚合 |
+| 质量评估 | DeepSeek-V3 | 硅基流动 API | 检索充分性判断 |
+| LLM-as-Judge | DeepSeek-V3 | 硅基流动 API | 评测打分 |
 
 ## 主流程
 
