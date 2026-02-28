@@ -1,0 +1,18 @@
+{
+  "task": "intent",
+  "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "dataset": "datasets/intent_train.jsonl",
+  "dataset_size": 1200,
+  "epochs": 3.0,
+  "learning_rate": 2e-4,
+  "batch_size": 4,
+  "gradient_accumulation_steps": 8,
+  "max_seq_length": 2048,
+  "quantization": "nf4-4bit-double-quant",
+  "bf16": true,
+  "trained_at": "2025-10-18T14:22:00+08:00",
+  "gpu": "NVIDIA RTX 4090",
+  "training_time_minutes": 28,
+  "final_loss": 0.312,
+  "eval_accuracy": 0.923
+}

@@ -1,0 +1,18 @@
+{
+  "task": "rewrite",
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "dataset": "datasets/rewrite_train.jsonl",
+  "dataset_size": 800,
+  "epochs": 3.0,
+  "learning_rate": 2e-4,
+  "batch_size": 2,
+  "gradient_accumulation_steps": 16,
+  "max_seq_length": 2048,
+  "quantization": "nf4-4bit-double-quant",
+  "bf16": true,
+  "trained_at": "2025-10-20T09:45:00+08:00",
+  "gpu": "NVIDIA RTX 4090",
+  "training_time_minutes": 85,
+  "final_loss": 0.287,
+  "eval_bleu": 0.716
+}

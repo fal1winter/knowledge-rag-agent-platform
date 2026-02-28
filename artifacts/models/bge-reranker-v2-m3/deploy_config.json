@@ -1,0 +1,13 @@
+{
+  "model_name": "BAAI/bge-reranker-v2-m3",
+  "framework": "FlagReranker",
+  "max_length": 512,
+  "batch_size": 32,
+  "device": "cuda:0",
+  "fp16": true,
+  "serve_port": 8004,
+  "serve_endpoint": "/rerank",
+  "downloaded_at": "2025-10-15T10:00:00+08:00",
+  "model_size_gb": 2.2,
+  "notes": "HuggingFace 镜像下载，部署于本地 4090 推理服务"
+}

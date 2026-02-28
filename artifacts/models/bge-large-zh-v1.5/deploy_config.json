@@ -1,0 +1,14 @@
+{
+  "model_name": "BAAI/bge-large-zh-v1.5",
+  "framework": "sentence-transformers",
+  "max_length": 512,
+  "batch_size": 64,
+  "device": "cuda:0",
+  "fp16": true,
+  "serve_port": 8003,
+  "serve_endpoint": "/v1/embeddings",
+  "embedding_dim": 1024,
+  "downloaded_at": "2025-10-14T16:30:00+08:00",
+  "model_size_gb": 1.3,
+  "notes": "HuggingFace 镜像下载，兼容 OpenAI embeddings API 格式部署"
+}

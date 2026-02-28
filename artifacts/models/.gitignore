@@ -1,0 +1,7 @@
+# 模型权重文件不纳入版本管理
+*.safetensors
+*.bin
+*.pt
+*.onnx
+*.gguf
+model-*.index.json
