@@ -1,0 +1,119 @@
+version: "3.9"
+
+services:
+  # --- 向量检索 ---
+  milvus:
+    image: milvusdb/milvus:v2.3.4
+    container_name: rag-milvus
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    volumes:
+      - milvus_data:/var/lib/milvus
+    depends_on:
+      - etcd
+      - minio
+    command: ["milvus", "run", "standalone"]
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.11
+    container_name: rag-etcd
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ALLOW_NONE_AUTHENTICATION: "yes"
+    command: ["etcd", "--advertise-client-urls=http://0.0.0.0:2379", "--listen-client-urls=http://0.0.0.0:2379"]
+    volumes:
+      - etcd_data:/etcd
+
+  minio:
+    image: minio/minio:RELEASE.2023-12-20T01-00-02Z
+    container_name: rag-minio
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: ["server", "/data", "--console-address", ":9001"]
+    volumes:
+      - minio_data:/data
+
+  # --- BM25 稀疏检索 ---
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    container_name: rag-elasticsearch
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  # --- 知识图谱 ---
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: rag-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: none
+      NEO4J_PLUGINS: '["apoc"]'
+    volumes:
+      - neo4j_data:/data
+
+  # --- 缓存 ---
+  redis:
+    image: redis:7-alpine
+    container_name: rag-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # --- RAG 引擎 ---
+  rag-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag-engine
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      MILVUS_URI: http://milvus:19530
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      NEO4J_URI: bolt://neo4j:7687
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - milvus
+      - elasticsearch
+      - neo4j
+      - redis
+
+  # --- Java 业务网关 ---
+  java-gateway:
+    build:
+      context: ./java-gateway
+      dockerfile: Dockerfile
+    container_name: rag-java-gateway
+    ports:
+      - "8090:8090"
+    environment:
+      RAG_API_BASE_URL: http://rag-engine:8080
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - rag-engine
+
+volumes:
+  milvus_data:
+  etcd_data:
+  minio_data:
+  es_data:
+  neo4j_data:
+  redis_data:
