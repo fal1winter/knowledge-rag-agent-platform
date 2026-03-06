@@ -45,6 +45,7 @@ class IntentRouter:
         ]
 
     def route(self, request: QueryRequest, recent_context: List[str] | None = None) -> RouteDecision:
+        """三级路由：控制指令 → 关键词匹配 → 轻量模型分类，逐级降级。"""
         stripped = request.message.strip()
         has_agentic_query = stripped.lower().startswith("/agentic ")
         if request.force_agentic or has_agentic_query:

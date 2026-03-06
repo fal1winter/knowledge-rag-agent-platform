@@ -165,6 +165,7 @@ def build_agent(
     tree_store: InMemoryRaptorStore | None = None,
     graph: Neo4jGraphRetriever | None = None,
 ) -> KnowledgeRagAgent:
+    """组装 RAG Agent 全链路依赖：路由 → 检索 → 重排 → 生成。"""
     config = load_config()
     embeddings = embeddings or build_embedding_client()
     dense = dense or MilvusDenseRetriever(uri=config.milvus_uri, fallback=_local_dense_fallback())
@@ -230,6 +231,7 @@ def build_ingestion_pipeline(
 
 
 def build_runtime() -> Tuple[KnowledgeRagAgent, KnowledgeIngestionPipeline]:
+    """构造共享依赖实例的 Agent + 入库 Pipeline 二元组，供 API 层调用。"""
     config = load_config()
     embeddings = build_embedding_client()
     dense = MilvusDenseRetriever(uri=config.milvus_uri, fallback=_local_dense_fallback())

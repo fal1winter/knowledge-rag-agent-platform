@@ -75,6 +75,7 @@ class KnowledgeIngestionPipeline:
         self.entity_extractor = entity_extractor
 
     def ingest(self, asset: DocumentAsset) -> IngestionResult:
+        """端到端入库：解析 → 语义切片 → RAPTOR 建树 → 写入向量/BM25/图谱索引。"""
         parsed = self.parser.parse(asset)
         leaf_chunks = self.chunker.split(parsed)
         raptor_nodes = self.raptor_builder.build(leaf_chunks)

@@ -37,6 +37,7 @@ class RaptorTreeBuilder:
         self.config = config or RaptorConfig()
 
     def build(self, leaf_chunks: Iterable[Chunk]) -> List[Chunk]:
+        """自底向上迭代构建：叶子节点 → 聚类 → 摘要生成父节点 → 重复至顶。"""
         all_nodes: List[Chunk] = []
         current_level = [self._with_vector(chunk) for chunk in leaf_chunks]
         all_nodes.extend(current_level)
@@ -82,7 +83,7 @@ class RaptorTreeBuilder:
         return chunk
 
     def _cluster(self, chunks: List[Chunk]) -> List[List[Chunk]]:
-        """基于余弦相似度的确定性 k-means 聚类。"""
+        """基于余弦相似度的确定性 k-means 聚类（不依赖随机初始化）。"""
         if len(chunks) <= self.config.branching_factor:
             return [chunks]
         k = max(1, math.ceil(len(chunks) / max(1, self.config.branching_factor)))

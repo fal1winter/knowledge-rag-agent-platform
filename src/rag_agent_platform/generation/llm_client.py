@@ -18,8 +18,10 @@ class ChatModel(Protocol):
 class DeepSeekChatAdapter:
     """SiliconFlow 托管 DeepSeek 适配器，用于复杂推理和生成任务。
 
-    通过硅基流动 API 调用 DeepSeek 系列模型，兼容 OpenAI chat/completions 接口。
+    通过硅基流动 API (https://api.siliconflow.cn/v1) 调用 DeepSeek 系列模型，
+    兼容 OpenAI chat/completions 接口。
     适用于：回答生成、RAPTOR 摘要、迭代检索质量评估、LLM-as-Judge 评测。
+    API 不可达时自动降级为抽取式兜底回答。
     """
 
     def __init__(
@@ -59,7 +61,9 @@ class DeepSeekChatAdapter:
 class QwenChatAdapter:
     """本地部署 Qwen/vLLM 适配器，用于简单低延迟任务。
 
+    通过 vLLM 加载 QLoRA 微调权重，单机 GPU 推理。
     适用于：意图分类（1.5B QLoRA）、查询改写（7B QLoRA）等轻量推理。
+    延迟要求：P99 < 200ms（1.5B）/ < 500ms（7B）。
     """
 
     def __init__(self, endpoint: str, api_key: str = "", model: str = "Qwen2.5-7B-Instruct", fallback_enabled: bool = True):

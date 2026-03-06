@@ -73,9 +73,14 @@ class AgenticRetriever:
     2. 质量评估器评判证据充分性
     3. 不充分时：
        a. 先通过子查询拆分继续用主检索器迭代
-       b. 若连续 2 轮无明显增量，触发策略回退
+       b. 若连续 stagnation_patience 轮无明显增量，触发策略回退
        c. 按照评估器建议的 fallback 策略调用备选检索器
     4. 达到 max_rounds 或证据充分后返回
+
+    设计要点：
+    - 去重基于 chunk_id，避免重复证据稀释精排效果
+    - 回退策略由 QualityAssessor 建议而非硬编码顺序
+    - 每轮 trace 记录便于事后调试和评估
     """
 
     def __init__(
@@ -108,7 +113,7 @@ class AgenticRetriever:
         strategies_used: List[str] = ["hybrid"]
         failed_queries: List[str] = []
 
-        # 首轮：主检索器
+        # === 首轮：使用主检索器获取初始证据 ===
         initial_hits = self._deduplicated_retrieve(
             self.retriever, tenant_id, query, material_ids, seen_chunks
         )
@@ -122,7 +127,7 @@ class AgenticRetriever:
         if verdict.sufficient:
             return self._build_result(all_hits, trace, verdict.coverage, strategies_used)
 
-        # 迭代阶段
+        # === 迭代阶段：子查询拆分 → 增量检索 → 质量再评估 ===
         stagnation_count = 0
         prev_coverage = verdict.coverage
         pending_queries: List[str] = []
@@ -136,7 +141,7 @@ class AgenticRetriever:
 
             current_query = pending_queries.pop(0)
 
-            # 判断是否应该切换策略
+            # 连续 N 轮无增量 → 触发备选策略回退（图谱/RAPTOR/精准块）
             if stagnation_count >= self.stagnation_patience and verdict.suggested_fallback:
                 new_hits = self._try_fallback(
                     verdict.suggested_fallback, tenant_id, query,
