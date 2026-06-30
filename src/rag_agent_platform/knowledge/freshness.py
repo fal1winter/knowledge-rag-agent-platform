@@ -6,6 +6,7 @@
 - 后台定时巡检调度（可选）
 - 巡检结果通知回调
 - 巡检报告统计摘要
+- 基于 source_url 的主动拉取变更检测（无需 web search）
 """
 
 from dataclasses import dataclass, field
@@ -19,12 +20,21 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class KnowledgeRecord:
-    """知识库中的一条文档记录。"""
+    """知识库中的一条文档记录。
+
+    Attributes:
+        source_uri: 可访问的更新源链接，巡检时直接拉取对比内容变化
+        content_hash: 入库时计算的内容指纹（SHA-256），用于判断源是否有更新
+        check_interval_hours: 该文档的检查间隔（小时），不同文档可设置不同频率
+    """
     document_id: str
     tenant_id: str
     title: str
     updated_at: datetime
     source_uri: str
+    content_hash: str = ""
+    check_interval_hours: float = 24.0
+    last_checked_at: Optional[datetime] = None
     metadata: Dict = field(default_factory=dict)
 
 
@@ -288,3 +298,174 @@ class FreshnessInspector:
             critical_count=critical_count,
             issues=issues,
         )
+
+
+# ---------------------------------------------------------------------------
+# 基于 source_url 的主动更新检测
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class SourceUpdateResult:
+    """单条文档的源更新检测结果。"""
+    document_id: str
+    source_url: str
+    changed: bool
+    old_fingerprint: str
+    new_fingerprint: str = ""
+    error: str = ""
+
+
+@dataclass
+class SourceUpdateReport:
+    """批量源更新检测报告。"""
+    checked_at: datetime
+    total_checked: int
+    changed_count: int
+    error_count: int
+    results: List[SourceUpdateResult] = field(default_factory=list)
+
+    def summary(self) -> str:
+        return (
+            f"源更新检测: {self.total_checked} 条, "
+            f"有变更 {self.changed_count}, 错误 {self.error_count}"
+        )
+
+
+class ContentFingerprintStore(Protocol):
+    """文档内容指纹存储协议。"""
+
+    def get_fingerprint(self, document_id: str) -> Optional[str]:
+        """获取文档上次入库时的内容指纹。"""
+
+    def set_fingerprint(self, document_id: str, fingerprint: str) -> None:
+        """更新文档内容指纹。"""
+
+
+class SourceUpdateChecker:
+    """基于 source_url 的知识更新检测器。
+
+    核心思路：
+    - 用户上传文档时附带一个可访问的 source_url（如内部文档系统 API 链接）
+    - 入库时计算内容 SHA-256 指纹并存储
+    - 巡检时直接 HTTP GET 该 URL 获取最新内容，对比指纹
+    - 指纹变化 → 标记需要增量重入库；无变化 → 更新 last_checked_at
+
+    优势：
+    - 不依赖 web search（费用高、结果不稳定）
+    - 精准对比同一来源的变更，不会误判
+    - 可针对不同文档设置不同检查频率
+    """
+
+    def __init__(
+        self,
+        repository: KnowledgeRepository,
+        fingerprint_store: ContentFingerprintStore,
+        http_timeout: float = 15.0,
+        on_change_callback: Optional[Callable[[KnowledgeRecord, str], None]] = None,
+    ):
+        """
+        Args:
+            repository: 知识库存储
+            fingerprint_store: 内容指纹存储
+            http_timeout: 拉取源 URL 的超时时间
+            on_change_callback: 检测到变更时的回调，参数为 (record, new_content)
+        """
+        self.repository = repository
+        self.fingerprint_store = fingerprint_store
+        self.http_timeout = http_timeout
+        self.on_change_callback = on_change_callback
+
+    def check_updates(
+        self,
+        records: Optional[Iterable[KnowledgeRecord]] = None,
+    ) -> SourceUpdateReport:
+        """批量检测文档源是否有更新。
+
+        仅检查 metadata 中包含 source_url 的记录。
+        没有 source_url 的记录跳过（退化为基于 TTL 的时间巡检）。
+
+        Args:
+            records: 待检测的记录列表，默认为全部公开记录
+        """
+        import hashlib
+        import urllib.request
+        import urllib.error
+
+        if records is None:
+            records = self.repository.list_public_records()
+
+        results: List[SourceUpdateResult] = []
+        changed_count = 0
+        error_count = 0
+
+        for record in records:
+            source_url = record.metadata.get("source_url") or record.source_uri
+            if not source_url or not source_url.startswith(("http://", "https://")):
+                continue
+
+            old_fingerprint = self.fingerprint_store.get_fingerprint(record.document_id) or ""
+
+            try:
+                content = self._fetch_content(source_url)
+                new_fingerprint = hashlib.sha256(content.encode("utf-8")).hexdigest()
+            except Exception as e:
+                logger.warning(
+                    "拉取源 URL 失败: document_id=%s, url=%s, error=%s",
+                    record.document_id, source_url, e,
+                )
+                results.append(SourceUpdateResult(
+                    document_id=record.document_id,
+                    source_url=source_url,
+                    changed=False,
+                    old_fingerprint=old_fingerprint,
+                    error=str(e),
+                ))
+                error_count += 1
+                continue
+
+            changed = bool(old_fingerprint) and new_fingerprint != old_fingerprint
+
+            if changed:
+                changed_count += 1
+                self.fingerprint_store.set_fingerprint(record.document_id, new_fingerprint)
+                self.repository.mark_stale(record.document_id, "源内容已变更，需重新入库")
+                logger.info(
+                    "检测到源更新: document_id=%s, title=%s",
+                    record.document_id, record.title,
+                )
+                if self.on_change_callback:
+                    try:
+                        self.on_change_callback(record, content)
+                    except Exception as e:
+                        logger.warning("变更回调执行失败: %s", e)
+            elif not old_fingerprint:
+                # 首次记录指纹（新入库文档）
+                self.fingerprint_store.set_fingerprint(record.document_id, new_fingerprint)
+
+            results.append(SourceUpdateResult(
+                document_id=record.document_id,
+                source_url=source_url,
+                changed=changed,
+                old_fingerprint=old_fingerprint,
+                new_fingerprint=new_fingerprint,
+            ))
+
+        report = SourceUpdateReport(
+            checked_at=datetime.utcnow(),
+            total_checked=len(results),
+            changed_count=changed_count,
+            error_count=error_count,
+            results=results,
+        )
+        logger.info(report.summary())
+        return report
+
+    def _fetch_content(self, url: str) -> str:
+        """拉取 URL 内容并返回文本。"""
+        import urllib.request
+        import urllib.error
+
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=self.http_timeout) as resp:
+            return resp.read().decode("utf-8", errors="replace")
