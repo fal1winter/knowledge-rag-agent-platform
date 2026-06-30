@@ -1,4 +1,8 @@
-"""独立项目运行时配置。"""
+"""独立项目运行时配置。
+
+所有配置项优先读取环境变量，未设置时使用开发模式默认值。
+生产部署通过 .env 或容器环境变量覆盖。
+"""
 
 from dataclasses import dataclass, field
 import os
@@ -7,6 +11,14 @@ from typing import List
 
 @dataclass
 class ModelConfig:
+    """模型端点与名称配置。
+
+    分为三层：
+    - 本地轻量模型：Qwen QLoRA 微调，处理意图分类、查询改写等低延迟任务
+    - SiliconFlow 托管：DeepSeek 大模型，处理复杂推理、回答生成、摘要等任务
+    - 向量化与精排：本地部署的 BGE 系列模型
+    """
+
     # --- 本地部署轻量模型（简单任务：意图分类、查询改写） ---
     intent_endpoint: str = os.getenv("QWEN_INTENT_ENDPOINT", "http://127.0.0.1:8001/v1")
     rewrite_endpoint: str = os.getenv("QWEN_REWRITE_ENDPOINT", "http://127.0.0.1:8000/v1")
@@ -30,6 +42,8 @@ class ModelConfig:
 
 @dataclass
 class RetrievalConfig:
+    """检索超参数，影响召回量和精排截断。"""
+
     top_k_dense: int = 30
     top_k_sparse: int = 30
     final_top_k: int = 8
@@ -42,6 +56,8 @@ class RetrievalConfig:
 
 @dataclass
 class ServiceConfig:
+    """全局服务配置，统一管理中间件连接和运行时开关。"""
+
     app_name: str = "knowledge-rag-agent-platform"
     environment: str = os.getenv("APP_ENV", "development")
     milvus_uri: str = os.getenv("MILVUS_URI", "http://127.0.0.1:19530")

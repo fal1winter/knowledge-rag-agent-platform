@@ -1,4 +1,10 @@
-"""RAG 平台跨模块共享的领域模型。"""
+"""RAG 平台跨模块共享的领域模型。
+
+定义检索-生成全链路的数据结构：
+- 文档生命周期：DocumentAsset → ParsedDocument → Chunk
+- 检索链路：QueryRequest → RouteDecision → RetrievalHit → Answer
+- 评估与记忆：EvalCase / EvalScore / MemoryItem
+"""
 
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -7,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 
 class IntentType(str, Enum):
+    """三级路由输出的意图标签。"""
     CONTROL = "control"
     DIRECT_QA = "direct_qa"
     ENTITY_RELATION = "entity_relation"
@@ -16,6 +23,7 @@ class IntentType(str, Enum):
 
 
 class RetrievalStrategy(str, Enum):
+    """意图标签对应的检索策略，决定走哪条检索管线。"""
     PRECISE_BLOCK = "precise_block"
     GRAPH_MULTI_HOP = "graph_multi_hop"
     ITERATIVE = "iterative"
