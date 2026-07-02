@@ -39,6 +39,11 @@ class ModelConfig:
     reranker_model: str = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
     embedding_batch_size: int = 64
 
+    # --- 多模态视觉理解 ---
+    vision_endpoint: str = os.getenv("VISION_ENDPOINT", "https://api.siliconflow.cn/v1")
+    vision_api_key: str = os.getenv("VISION_API_KEY", "")
+    vision_model: str = os.getenv("VISION_MODEL", "Qwen/Qwen2-VL-7B-Instruct")  # 或 gpt-4o
+
 
 @dataclass
 class RetrievalConfig:
